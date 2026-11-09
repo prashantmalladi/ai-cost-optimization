@@ -1,0 +1,18 @@
+model_list:
+  # ---- Provider A: OpenAI ----
+  - model_name: mesh-gpt-mini # your own alias; feel free to change
+    litellm_params:
+      model: openai/gpt-4o-mini # model to proxy; feel free to change
+      api_key: os.environ/OPENAI_API_KEY
+
+  # ---- Provider B: Anthropic ----
+  - model_name: mesh-claude-haiku
+    litellm_params:
+      model: anthropic/claude-haiku-4-5-20251001
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+general_settings:
+  master_key: os.environ/MESH_API_KEY
+
+litellm_settings:
+  callbacks: ["langfuse_otel"]
