@@ -1,0 +1,10 @@
+[
+  "We are kicking off a Q3 internal audit. Give a structured overview of policy scope, the record classification taxonomy, and which teams own the highest-risk record classes. Include a table.",
+  "Compare retention periods, online vs archive requirements, and custodians for security logs (RC-004), customer account records (RC-001), support transcripts (RC-003), and vendor due diligence files (RC-007). Highlight any conflicts with the default 7-year rule.",
+  "A vendor analytics partner wants JIT access to export 2,500 rows of customer PII from CRM-Core for a one-time study. Walk through every approval required (Appendix B), network constraints (Section 3.3), encryption expectations (Section 4), and what evidence Internal Audit would expect per CTRL-AC-02.",
+  "Draft a Sev-1 incident response outline for confirmed unauthorized access to Sensitive Data: notification timelines under Section 5.2, jurisdiction-specific breach rules in Section 13 (EU and California), executive reporting from Section 20, and post-incident RCA/CAP requirements.",
+  "Our ML team proposes fine-tuning an internal model on support transcripts that may contain customer identifiers. Analyze obligations under Sections 2.4, 17, and Appendix B. State whether Risk Committee approval is required and what LEG-### documentation is needed.",
+  "Build a partial compliance control matrix excerpt covering all CTRL-IR-* and CTRL-VN-* controls: for each, summarize the control statement, evidence artifact, owner, and which Appendix C audit procedure would test it.",
+  "Cross-border scenario: we need to replicate EU-WEST CRM-Core RESTRICTED data to US-EAST for disaster recovery. Using Section 13.5, Section 14, and Section 6.3, list required instruments, approvers, and residual risks if TIA is outdated.",
+  "Synthesize everything from this conversation: list the top five compliance risks we surfaced, map each to specific CTRL-* IDs and policy sections, assign a priority (High/Medium/Low), and propose one concrete remediation action with a suggested owner and 30/60/90-day milestone."
+]
