@@ -1,0 +1,188 @@
+[
+  {
+    "name": "search_document",
+    "description": "Full-text search over the attached reference document. Returns matching section headings, subsection numbers, and excerpt snippets ranked by relevance. Use for locating policy language before synthesis.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search terms or natural language question to locate in the document."
+        },
+        "max_results": {
+          "type": "integer",
+          "description": "Maximum number of snippets to return (1-15).",
+          "default": 8
+        }
+      },
+      "required": ["query"]
+    }
+  },
+  {
+    "name": "list_sections",
+    "description": "Return the table of contents for the reference document with section numbers, appendix labels, and titles.",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "name": "extract_obligations",
+    "description": "Extract mandatory requirements (must/shall/required/prohibited) from a named section or appendix of the reference document.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "section_id": {
+          "type": "string",
+          "description": "Section identifier such as '2.3', 'SECTION 12', or 'APPENDIX B'."
+        }
+      },
+      "required": ["section_id"]
+    }
+  },
+  {
+    "name": "compare_retention_periods",
+    "description": "Compare retention periods, classification levels, and custodians across two or more record classes from Section 11.2.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "record_classes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Record class IDs or labels, e.g. ['RC-004', 'RC-001', 'security logs']."
+        }
+      },
+      "required": ["record_classes"]
+    }
+  },
+  {
+    "name": "draft_audit_checklist",
+    "description": "Generate an audit checklist for a compliance domain based on Section 12 controls and Appendix C procedures.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "enum": ["retention", "access", "encryption", "vendors", "incidents", "dsar", "ai_ml"]
+        }
+      },
+      "required": ["domain"]
+    }
+  },
+  {
+    "name": "map_control_matrix",
+    "description": "Look up entries in the Section 12 compliance control matrix by control ID prefix, policy section, or owner team.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "type": "string",
+          "description": "Control ID (e.g. CTRL-AC-02), policy ref (e.g. 3.2), or owner name (e.g. Security)."
+        }
+      },
+      "required": ["filter"]
+    }
+  },
+  {
+    "name": "lookup_jurisdiction_rules",
+    "description": "Return jurisdiction-specific obligations from Section 13 and cross-border transfer requirements for a region pair.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "jurisdiction": {
+          "type": "string",
+          "enum": ["EU", "UK", "US-CA", "US-HIPAA", "cross_border"]
+        },
+        "origin_region": {
+          "type": "string",
+          "description": "Required when jurisdiction is cross_border, e.g. 'EU'."
+        },
+        "destination_region": {
+          "type": "string",
+          "description": "Required when jurisdiction is cross_border, e.g. 'US'."
+        }
+      },
+      "required": ["jurisdiction"]
+    }
+  },
+  {
+    "name": "classify_vendor_tier",
+    "description": "Classify a subprocessor into Tier 1/2/3 per Appendix D based on data types processed and volume.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "processes_restricted_data": { "type": "boolean" },
+        "customer_record_count": { "type": "integer" },
+        "persistent_storage": { "type": "boolean" }
+      },
+      "required": ["processes_restricted_data", "persistent_storage"]
+    }
+  },
+  {
+    "name": "get_approval_requirements",
+    "description": "Return required approvers from Appendix B for a described action such as large PII export or model training.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "action_description": {
+          "type": "string",
+          "description": "Plain-language description of the proposed action."
+        }
+      },
+      "required": ["action_description"]
+    }
+  },
+  {
+    "name": "trace_system_inventory",
+    "description": "Look up systems of record from Section 14 by system name or record class ID.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "System name (e.g. CRM-Core) or record class (e.g. RC-004)."
+        }
+      },
+      "required": ["query"]
+    }
+  },
+  {
+    "name": "build_dsar_timeline",
+    "description": "Compute DSAR acknowledgment and fulfillment deadlines from Section 18 for a request type and jurisdiction.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "request_type": {
+          "type": "string",
+          "enum": ["access", "deletion", "correction", "restriction", "opt_out_cpra"]
+        },
+        "jurisdiction": {
+          "type": "string",
+          "enum": ["EU", "UK", "US-CA"]
+        }
+      },
+      "required": ["request_type", "jurisdiction"]
+    }
+  },
+  {
+    "name": "synthesize_risk_register",
+    "description": "Aggregate identified compliance gaps across conversation turns into a prioritized risk register with CAP suggestions.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "max_risks": {
+          "type": "integer",
+          "description": "Maximum number of risks to return (3-10).",
+          "default": 5
+        },
+        "include_controls": {
+          "type": "boolean",
+          "description": "Whether to map each risk to relevant CTRL-* IDs.",
+          "default": true
+        }
+      },
+      "required": []
+    }
+  }
+]

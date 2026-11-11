@@ -1,0 +1,536 @@
+MERIDIAN INTERNAL REFERENCE — DATA RETENTION AND ACCESS CONTROL POLICY (DRAFT v3.2)
+Effective for illustration purposes: June 1, 2026 | Classification: Internal Use Only
+
+================================================================================
+SECTION 1 — PURPOSE AND SCOPE
+================================================================================
+
+1.1 Purpose
+This policy defines minimum requirements for retaining business records, controlling
+access to sensitive data, and documenting audit trails across Meridian operating units.
+
+1.2 Scope
+Applies to all employees, contractors, and automated systems that create, store,
+transmit, or destroy records containing customer data, financial data, or compliance
+evidence. Excludes publicly marketing materials unless they embed customer examples.
+
+1.3 Definitions
+- Record: any persistent artifact (file, database row, log entry, ticket) subject to retention.
+- Sensitive Data: PII, payment metadata, authentication secrets, health-related fields.
+- Custodian: business owner accountable for a record class.
+- System of Record (SoR): authoritative store for a given entity type.
+
+================================================================================
+SECTION 2 — RETENTION SCHEDULE
+================================================================================
+
+2.1 Default Retention
+Unless a more specific schedule applies, operational records must be retained seven (7)
+years from the date of last material change. Material change includes status transitions
+that affect regulatory reporting.
+
+2.2 Customer Account Records
+Account profiles and contractual terms: retain ten (10) years after account closure.
+Support transcripts linked to billing disputes: retain eight (8) years.
+
+2.3 Security Logs
+Authentication logs, privileged access logs, and change-management logs: retain three (3)
+years online in searchable form; archive an additional two (2) years in cold storage.
+
+2.4 Model Training Artifacts
+Datasets labeled with customer identifiers must not be used for general model training.
+Derived aggregates with k-anonymity threshold k>=50 may be retained indefinitely with
+Legal approval documented in ticket LEG-###.
+
+2.5 Deletion Holds
+When litigation hold LIT-### is active, automated deletion jobs for affected record
+classes must pause within 24 hours of hold issuance. Release requires Legal written notice.
+
+================================================================================
+SECTION 3 — ACCESS CONTROL
+================================================================================
+
+3.1 Role-Based Access
+Access grants follow least privilege. Standing admin access is prohibited except for
+break-glass accounts under MFA and session recording.
+
+3.2 Approval Workflow
+Production data access beyond read-only analytics requires:
+(a) manager approval,
+(b) data custodian approval,
+(c) Security review for queries exporting >1,000 rows containing PII.
+
+3.3 Third Parties
+Vendor access uses time-bound credentials expiring within 72 hours unless renewed.
+All vendor sessions must originate from allowlisted IP ranges maintained by Security.
+
+3.4 Segregation of Duties
+The same individual must not both deploy production infrastructure changes and approve
+their own change record. Emergency changes require retrospective review within 48 hours.
+
+================================================================================
+SECTION 4 — ENCRYPTION AND KEY MANAGEMENT
+================================================================================
+
+4.1 Data at Rest
+Sensitive Data at rest must use AES-256 or equivalent. Keys rotate at least annually
+or immediately upon personnel changes affecting key custodians.
+
+4.2 Data in Transit
+TLS 1.2 minimum; TLS 1.3 preferred for external endpoints. Internal service mesh may
+use mTLS with certificate lifetimes not exceeding 90 days.
+
+4.3 Secrets
+Application secrets must not appear in source control. CI pipelines scan for high-entropy
+strings and known secret patterns; builds fail on critical findings unless waived by SEC-###.
+
+================================================================================
+SECTION 5 — MONITORING AND INCIDENT RESPONSE
+================================================================================
+
+5.1 Detective Controls
+SIEM alerts fire on: impossible travel logins, privilege escalation, mass export events,
+and deletion spikes exceeding baseline by 3 sigma over 7-day rolling window.
+
+5.2 Incident Severity
+Sev-1: confirmed unauthorized access to Sensitive Data. Initial executive notification
+within 60 minutes. Regulatory notification timelines follow jurisdiction-specific addenda.
+
+5.3 Post-Incident Review
+Sev-1 and Sev-2 incidents require root cause analysis within 10 business days including
+control gaps, compensating controls, and target completion dates.
+
+================================================================================
+SECTION 6 — VENDOR AND SUBPROCESSOR MANAGEMENT
+================================================================================
+
+6.1 Due Diligence
+New subprocessors handling Sensitive Data require InfoSec questionnaire, SOC 2 Type II
+(or equivalent) within 12 months, and contractual breach notification <=72 hours.
+
+6.2 Data Processing Agreements
+DPAs must specify processing purpose, retention limits, deletion certification, and audit rights.
+
+6.3 Geographic Restrictions
+Primary storage for EU data subjects remains in EU regions unless Standard Contractual
+Clauses and Transfer Impact Assessment are on file.
+
+================================================================================
+SECTION 7 — EMPLOYEE OBLIGATIONS
+================================================================================
+
+7.1 Training
+Annual privacy and security training completion is mandatory before production access grants.
+
+7.2 Clean Desk and Device
+Full-disk encryption required on laptops. Screen lock <=5 minutes idle. Report lost devices
+within 2 hours to Security.
+
+7.3 Acceptable Use
+Personal cloud storage of work records is prohibited. Use approved collaboration tools only.
+
+================================================================================
+SECTION 8 — AUDIT AND EVIDENCE
+================================================================================
+
+8.1 Evidence Packages
+For each control in the compliance matrix, custodians maintain: policy excerpt, system
+configuration snapshot, sample query output, and named reviewer sign-off quarterly.
+
+8.2 Sampling
+Internal audit samples 5% of access grants monthly; exceptions tracked in AUD-### register.
+
+8.3 Non-Compliance Escalation
+Repeated failures in the same control domain trigger corrective action plan within 15 days.
+
+================================================================================
+SECTION 9 — EXCEPTIONS AND WAIVERS
+================================================================================
+
+9.1 Temporary Waivers
+Waivers expire in 90 days maximum. Extensions require Risk Committee review.
+
+9.2 Compensating Controls
+Each waiver documents compensating controls and residual risk rating (Low/Medium/High).
+
+================================================================================
+SECTION 10 — REVISION HISTORY
+================================================================================
+
+v3.2 (2026-06-01): Clarified model training restrictions (2.4), added vendor IP allowlist (3.3).
+v3.1 (2025-11-15): Extended security log archive requirement (2.3).
+v3.0 (2025-03-01): Initial consolidated policy replacing DR-1 and AC-2 silos.
+
+================================================================================
+SECTION 11 — RECORD CLASSIFICATION TAXONOMY
+================================================================================
+
+11.1 Classification Levels
+All records receive one of four classification labels at creation time:
+- PUBLIC: marketing materials approved for external distribution without customer data.
+- INTERNAL: business operations data not containing Sensitive Data.
+- CONFIDENTIAL: business data that could cause material harm if disclosed; may include
+  aggregated analytics without direct identifiers.
+- RESTRICTED: contains Sensitive Data as defined in Section 1.3; highest handling bar.
+
+11.2 Record Class Catalog (Authoritative)
+The following record classes are in scope for retention, access, and audit sampling.
+Custodians must map every production datastore to exactly one primary record class.
+
+| Record Class ID | Description | Default Classification | Primary Custodian |
+|-----------------|-------------|----------------------|-------------------|
+| RC-001 | Customer account profiles and contractual terms | RESTRICTED | Revenue Operations |
+| RC-002 | Billing and payment transaction records | RESTRICTED | Finance Systems |
+| RC-003 | Support transcripts and case management tickets | CONFIDENTIAL | Customer Support |
+| RC-004 | Authentication and privileged access logs | RESTRICTED | Security Engineering |
+| RC-005 | Change-management and deployment audit logs | INTERNAL | Platform Engineering |
+| RC-006 | SIEM alert history and investigation notes | CONFIDENTIAL | Security Operations |
+| RC-007 | Vendor due diligence questionnaires and SOC reports | CONFIDENTIAL | Third-Party Risk |
+| RC-008 | Employee HR and background check artifacts | RESTRICTED | People Operations |
+| RC-009 | Model training datasets (labeled or unlabeled) | RESTRICTED | ML Platform |
+| RC-010 | Derived analytics aggregates (k>=50) | CONFIDENTIAL | Data Science |
+| RC-011 | Legal hold registers and litigation correspondence | RESTRICTED | Legal |
+| RC-012 | Internal audit workpapers and evidence packages | CONFIDENTIAL | Internal Audit |
+| RC-013 | Data Processing Agreements and vendor contracts | CONFIDENTIAL | Procurement |
+| RC-014 | DSAR request logs and fulfillment evidence | RESTRICTED | Privacy Office |
+| RC-015 | Backup snapshots containing production database copies | RESTRICTED | Infrastructure |
+
+11.3 Reclassification Rules
+Reclassification from INTERNAL to RESTRICTED (or higher) requires custodian approval and
+Security notification within one business day. Down-classification requires Legal review when
+the record ever contained Sensitive Data.
+
+================================================================================
+SECTION 12 — COMPLIANCE CONTROL MATRIX
+================================================================================
+
+12.1 Purpose
+This matrix maps policy sections to detective/preventive controls, evidence artifacts, and
+review cadence. Internal Audit uses this matrix for quarterly sampling per Section 8.2.
+
+| Control ID | Policy Ref | Control Statement | Control Type | Evidence Artifact | Owner | Review Cadence |
+|------------|------------|-------------------|--------------|-------------------|-------|----------------|
+| CTRL-AC-01 | 3.1 | Standing admin access prohibited except break-glass | Preventive | IAM role export + quarterly attestation | Security | Quarterly |
+| CTRL-AC-02 | 3.2 | Production PII export >1,000 rows requires Security review | Preventive | Approval ticket + query audit log | Data Governance | Monthly sample |
+| CTRL-AC-03 | 3.3 | Vendor sessions from allowlisted IPs only | Preventive | VPN/firewall config snapshot | Network Security | Quarterly |
+| CTRL-AC-04 | 3.4 | Deployer cannot approve own change record | Preventive | Change ticket segregation report | Platform Eng | Monthly |
+| CTRL-RT-01 | 2.1 | Default 7-year retention for operational records | Preventive | Retention job configuration | Records Mgmt | Semi-annual |
+| CTRL-RT-02 | 2.5 | Litigation hold pauses deletion within 24 hours | Detective | Hold register + job pause logs | Legal | Per hold event |
+| CTRL-EN-01 | 4.1 | Sensitive Data at rest uses AES-256 | Preventive | KMS config + encryption scan | Infrastructure | Quarterly |
+| CTRL-EN-02 | 4.2 | External endpoints TLS 1.2 minimum | Preventive | SSL Labs / cert inventory | Security | Monthly |
+| CTRL-EN-03 | 4.3 | Secrets blocked in source control | Detective | CI secret scan results | App Security | Per build |
+| CTRL-IR-01 | 5.1 | SIEM alerts on mass export and privilege escalation | Detective | Alert rule definitions + fired alerts | SecOps | Weekly |
+| CTRL-IR-02 | 5.2 | Sev-1 executive notification within 60 minutes | Detective | Incident timeline + comms log | Incident Mgmt | Per incident |
+| CTRL-IR-03 | 5.3 | Sev-1/2 RCA within 10 business days | Corrective | RCA document + CAP tracker | Incident Mgmt | Per incident |
+| CTRL-VN-01 | 6.1 | New subprocessor SOC 2 Type II within 12 months | Preventive | Vendor file + questionnaire | TPRM | Per onboarding |
+| CTRL-VN-02 | 6.2 | DPA specifies deletion certification | Preventive | Executed DPA template | Legal | Per contract |
+| CTRL-VN-03 | 6.3 | EU data in EU regions unless SCC/TIA on file | Preventive | Data residency map | Privacy | Annual |
+| CTRL-TR-01 | 7.1 | Annual training before production access | Preventive | LMS completion report | People Ops | Quarterly |
+| CTRL-AU-01 | 8.1 | Quarterly evidence package per control | Detective | Evidence binder per CTRL-* | Control owners | Quarterly |
+| CTRL-AU-02 | 8.2 | 5% monthly sample of access grants | Detective | AUD-### exception register | Internal Audit | Monthly |
+| CTRL-AI-01 | 2.4 | No customer-identifiable data in general model training | Preventive | Dataset lineage + LEG-### approval | ML Platform | Per dataset |
+| CTRL-DS-01 | 18.2 | DSAR acknowledgment within 72 hours | Detective | DSAR ticket timestamps | Privacy Office | Per request |
+
+12.2 Control Testing Methodology
+For each CTRL-* entry, testers perform:
+(a) inquiry with control owner,
+(b) inspection of the listed evidence artifact,
+(c) reperformance of one sample transaction where applicable.
+Failures rated High residual risk escalate to Risk Committee within 5 business days.
+
+================================================================================
+SECTION 13 — JURISDICTION-SPECIFIC ADDENDA
+================================================================================
+
+13.1 European Union (GDPR)
+- Lawful basis for processing must be documented before collection of EU personal data.
+- Data subject access requests (DSARs): acknowledge within 72 hours; fulfill within 30 days
+  unless extension documented (max additional 60 days with notice).
+- Breach notification to supervisory authority: without undue delay, and where feasible within
+  72 hours of awareness, when risk to rights and freedoms is likely.
+- Data Protection Impact Assessments required for large-scale processing of special categories
+  or systematic monitoring.
+
+13.2 United Kingdom (UK GDPR + DPA 2018)
+- Mirrors EU timelines for DSARs unless UK ICO guidance specifies otherwise.
+- ICO breach notification: within 72 hours when likely to result in risk to individuals.
+- UK data may not be transferred to non-adequate countries without appropriate safeguards.
+
+13.3 United States — California (CCPA/CPRA)
+- Consumer opt-out of sale/sharing must be honored within 15 business days of verifiable request.
+- Sensitive personal information use limitations require explicit notice at collection.
+- Retention disclosures in privacy notice must align with schedules in Section 2.
+
+13.4 United States — HIPAA (where Business Associate)
+- Minimum necessary standard applies to PHI access and disclosure.
+- Breach notification to covered entity: without unreasonable delay, no later than 60 days
+  from discovery of breach.
+- Business Associate Agreement must reference permitted uses in Section 6.2 DPA template.
+
+13.5 Cross-Border Transfer Summary Table
+
+| Origin Region | Destination Region | Required Instrument | Approver |
+|---------------|-------------------|---------------------|----------|
+| EU | US | SCC + TIA on file | Privacy + Legal |
+| EU | UK | Adequacy or SCC | Privacy |
+| UK | US | UK IDTA or SCC | Privacy + Legal |
+| US (CA) | Any | Standard DPA + CPRA addendum | Privacy |
+| Any | Restricted countries list | Prohibited unless Risk Committee waiver | Risk Committee |
+
+================================================================================
+SECTION 14 — DATA FLOW AND SYSTEM INVENTORY
+================================================================================
+
+14.1 Systems of Record
+| System | Record Classes | Region | Encryption | Backup RPO/RTO |
+|--------|----------------|--------|------------|----------------|
+| CRM-Core | RC-001, RC-003 | US-EAST, EU-WEST | AES-256 at rest, TLS 1.3 | 1h / 4h |
+| LedgerDB | RC-002 | US-EAST | AES-256 at rest, TLS 1.3 | 15m / 2h |
+| AuthN-Svc | RC-004 | US-EAST, EU-WEST | AES-256 at rest, mTLS internal | 1h / 1h |
+| DeployLog | RC-005 | US-EAST | AES-256 at rest, TLS 1.2 | 24h / 8h |
+| SIEM-Prod | RC-006 | US-EAST | AES-256 at rest, TLS 1.3 | 4h / 4h |
+| VendorVault | RC-007, RC-013 | US-EAST | AES-256 at rest, TLS 1.3 | 24h / 24h |
+| ML-FeatureStore | RC-009, RC-010 | US-EAST | AES-256 at rest, TLS 1.3 | 4h / 8h |
+| LegalHold | RC-011 | US-EAST | AES-256 at rest, TLS 1.3 | 24h / 24h |
+
+14.2 Data Flow Principles
+- Sensitive Data must not traverse unapproved SaaS collaboration tools (Section 7.3).
+- Batch exports to analytics warehouses require anonymization or aggregation meeting Section 2.4.
+- Cross-region replication of RESTRICTED data requires Privacy impact review.
+
+14.3 Integration Points Subject to Enhanced Monitoring
+- Payment processor webhooks (PCI-adjacent metadata)
+- Identity provider SCIM provisioning
+- Customer support CCaaS transcript ingestion
+- Third-party OCR for document intake (vendor must be Tier 1 or Tier 2 per Appendix D)
+
+================================================================================
+SECTION 15 — PRIVILEGED ACCESS MANAGEMENT
+================================================================================
+
+15.1 Break-Glass Accounts
+- Maximum three break-glass accounts per production environment.
+- MFA hardware token required; password rotation after each use within 24 hours.
+- Session recording mandatory; Security reviews recording within 2 business days.
+
+15.2 Just-In-Time (JIT) Elevation
+- Standard production write access uses JIT elevation windows of 4 hours maximum.
+- Extensions require re-approval from manager and Security.
+- All JIT grants logged to RC-004 with requesting user, approver, scope, and time bounds.
+
+15.3 Quarterly Access Recertification
+- Custodians recertify all standing access for their record classes every quarter.
+- Orphaned accounts (no login 90 days) suspended automatically pending manager confirmation.
+
+================================================================================
+SECTION 16 — BACKUP, RECOVERY, AND MEDIA HANDLING
+================================================================================
+
+16.1 Backup Requirements
+- RESTRICTED record classes: encrypted backups, geographically separated secondary region.
+- Backup access limited to Infrastructure break-glass and backup operators role.
+- Restore tests performed semi-annually; results stored in RC-012 audit workpapers.
+
+16.2 Media Sanitization
+- Physical media destruction: NIST 800-88 Purge or Destroy methods documented per device.
+- Cloud volume deletion: cryptographic erase verified via provider attestation where available.
+- Certificates of destruction retained 7 years under RC-012.
+
+16.3 Disaster Recovery
+- RTO/RTO targets in Section 14.1 are maximums; critical payment path targets half those values.
+- DR failover exercises conducted annually; executive summary due to Risk Committee within 30 days.
+
+================================================================================
+SECTION 17 — AI / ML GOVERNANCE
+================================================================================
+
+17.1 Training Data Restrictions
+- Datasets containing customer identifiers must not enter general-purpose foundation model
+  fine-tuning without Legal approval (LEG-###) and documented purpose limitation.
+- Synthetic data generation from RESTRICTED sources requires differential privacy review
+  when epsilon > 1.0.
+
+17.2 Inference and Logging
+- Production inference logs retaining user prompts with PII must follow RC-003 retention unless
+  redaction pipeline certified by Privacy.
+- Model outputs used for automated decisions affecting customers require human review pathway
+  documented in product risk assessment.
+
+17.3 Evaluation and Monitoring
+- Bias and safety evaluations required before major model version promotion to production.
+- Rollback procedure must complete within 4 hours of confirmed Sev-2 model incident.
+
+================================================================================
+SECTION 18 — DATA SUBJECT RIGHTS (DSAR)
+================================================================================
+
+18.1 Intake Channels
+Verified requests accepted via privacy portal, legal mail, or support escalation queue.
+Support agents must not fulfill deletion/export without Privacy Office ticket assignment.
+
+18.2 Fulfillment Timelines
+| Request Type | Acknowledgment | Fulfillment Target | Extension Allowed |
+|--------------|----------------|--------------------|-------------------|
+| Access / portability | 72 hours | 30 days | +60 days with notice |
+| Deletion | 72 hours | 45 days | +30 days with notice |
+| Correction | 72 hours | 30 days | +30 days with notice |
+| Restriction | 72 hours | 30 days | Case-by-case |
+| Opt-out (CPRA) | 15 business days | 15 business days | No |
+
+18.3 Identity Verification
+Minimum two-factor verification for RESTRICTED categories; reduced friction only for
+low-risk INTERNAL records with fraud monitoring enabled.
+
+18.4 Deletion Exceptions
+Records under litigation hold (Section 2.5), tax hold, or mandatory retention (Section 2)
+may be suppressed from active systems but must remain in legal hold archive until release.
+
+================================================================================
+SECTION 19 — PHYSICAL SECURITY AND FACILITY CONTROLS
+================================================================================
+
+19.1 Data Center and Office Access
+- Badge access logs retained 1 year online, 2 years archive (RC-005 mapping).
+- Visitor escort required in areas processing RESTRICTED media.
+
+19.2 Clean Desk / Clear Screen
+Reinforces Section 7.2; spot checks performed quarterly by Facilities with results to Security.
+
+19.3 Lost or Stolen Devices
+Report within 2 hours; remote wipe initiated within 1 hour for managed devices.
+
+================================================================================
+SECTION 20 — METRICS, REPORTING, AND GOVERNANCE
+================================================================================
+
+20.1 Executive Dashboard (Monthly)
+- Open Sev-1/2 incidents and mean time to contain
+- DSAR backlog aging beyond SLA
+- Percent access grants recertified on schedule
+- Vendor contracts expiring within 90 days without renewed SOC report
+- Training completion rate for production-access population
+
+20.2 Risk Committee Cadence
+Quarterly review of High residual risk waivers (Section 9), open CAP items from audits,
+and cross-jurisdiction transfer inventory changes.
+
+20.3 Policy Exception Register
+All active waivers listed with expiry, compensating controls, and named executive sponsor.
+No waiver may exceed 90 days without Risk Committee extension (Section 9.1).
+
+================================================================================
+APPENDIX A — GLOSSARY (EXTENDED)
+================================================================================
+
+AES-256: Advanced Encryption Standard with 256-bit keys; approved algorithm for data at rest.
+BAA: Business Associate Agreement under HIPAA.
+CAP: Corrective Action Plan following audit or incident findings.
+CCPA/CPRA: California consumer privacy statutes.
+Cold storage: Tiered storage with retrieval latency >24 hours; acceptable for log archives.
+Custodian: Business owner accountable for a record class per Section 1.3.
+DPA: Data Processing Agreement with subprocessors.
+DSAR: Data Subject Access Request under GDPR/UK GDPR or analogous rights requests.
+DPIA: Data Protection Impact Assessment.
+IAM: Identity and Access Management platform.
+JIT: Just-In-Time temporary elevation of privileges.
+k-anonymity: Group size threshold for aggregate releases (Section 2.4 uses k>=50).
+mTLS: Mutual TLS authentication between services.
+PII: Personally Identifiable Information.
+RCA: Root Cause Analysis after incidents.
+RPO/RTO: Recovery Point Objective / Recovery Time Objective for backups and DR.
+SCC: Standard Contractual Clauses for international data transfers.
+Sev-1/2: Incident severity classifications per Section 5.2.
+SIEM: Security Information and Event Management platform.
+SOC 2 Type II: Service organization controls audit report covering operating effectiveness.
+SoR: System of Record — authoritative datastore for an entity type.
+TIA: Transfer Impact Assessment for cross-border data flows.
+TPRM: Third-Party Risk Management program.
+
+================================================================================
+APPENDIX B — APPROVAL AUTHORITY MATRIX
+================================================================================
+
+| Action | Manager | Custodian | Security | Legal | Privacy | Risk Committee |
+|--------|---------|-----------|----------|-------|---------|----------------|
+| Read-only analytics on CONFIDENTIAL | — | Inform | — | — | — | — |
+| Production export 100–1,000 PII rows | Approve | Approve | Inform | — | — | — |
+| Production export >1,000 PII rows | Approve | Approve | Approve | — | Approve | — |
+| Break-glass account use | Approve | — | Approve | Inform | — | — |
+| Litigation hold issuance | — | — | Inform | Approve | Inform | — |
+| Retention schedule exception | Approve | Approve | — | Approve | Inform | Approve |
+| New Tier 1 subprocessor | — | — | Approve | Approve | Approve | Inform |
+| EU→US data transfer new purpose | — | — | Inform | Approve | Approve | Approve |
+| Model training on customer-identifiable data | — | — | Approve | Approve | Approve | Approve |
+| Policy waiver >90 days | — | — | Inform | Approve | Inform | Approve |
+
+================================================================================
+APPENDIX C — SAMPLE AUDIT PROCEDURES (EXCERPT)
+================================================================================
+
+Procedure AUD-RET-01 — Retention Job Verification
+1. Obtain retention configuration export for three randomly selected record classes.
+2. Compare configured period to Section 2 schedules and RC catalog mapping (Section 11.2).
+3. Select 25 records past nominal retention; verify deletion or hold flag in LegalHold system.
+4. Document exceptions in AUD-### register with severity rating.
+
+Procedure AUD-AC-02 — Privileged Access Sampling
+1. Pull 5% sample of JIT elevations from RC-004 for the audit month.
+2. Verify each has manager approval, Security approval when scope includes PII export.
+3. Confirm session recording exists for break-glass activations.
+4. Test one orphaned account suspension workflow in IAM staging.
+
+Procedure AUD-VN-03 — Vendor File Completeness
+1. Select all vendors onboarded in quarter with RESTRICTED data processing.
+2. Verify SOC 2 Type II date within 12 months and InfoSec questionnaire on file.
+3. Confirm DPA includes deletion certification language from Section 6.2.
+4. Validate IP allowlist entries match Section 3.3 for active vendor integrations.
+
+Procedure AUD-IR-04 — Incident Timeline Reconstruction
+1. For each Sev-1 in period, reconstruct timeline from SIEM, tickets, and executive comms.
+2. Verify 60-minute executive notification for Sev-1 (CTRL-IR-02).
+3. Verify RCA published within 10 business days (CTRL-IR-03).
+4. Trace CAP items to owner and target dates in governance tracker.
+
+================================================================================
+APPENDIX D — VENDOR RISK TIERS
+================================================================================
+
+Tier 1 — Critical Subprocessor
+- Processes RESTRICTED data in production path or stores >10,000 customer records.
+- Requirements: SOC 2 Type II annually, pen test summary, 24/7 security contact, DR attestation.
+- Review cadence: semi-annual meeting + continuous monitoring alerts.
+
+Tier 2 — Material Subprocessor
+- Processes CONFIDENTIAL data or intermittent RESTRICTED with tokenization.
+- Requirements: SOC 2 Type II or ISO 27001 within 12 months, InfoSec questionnaire.
+- Review cadence: annual questionnaire refresh.
+
+Tier 3 — Low Risk
+- INTERNAL data only or no persistent Meridian data storage.
+- Requirements: standard contract terms, security addendum acknowledgment.
+- Review cadence: triennial or on contract renewal.
+
+Prohibited vendors: any vendor on sanctions list, without breach notification clause,
+or refusing audit rights for Tier 1/2 classifications.
+
+================================================================================
+APPENDIX E — ENCRYPTION STANDARDS DETAIL
+================================================================================
+
+E.1 Approved Algorithms
+- Symmetric at rest: AES-256-GCM or AES-256-XTS for volume encryption.
+- Asymmetric in transit: TLS 1.2+ with forward secrecy cipher suites; TLS 1.3 preferred.
+- Hashing for integrity: SHA-256 minimum; legacy MD5/SHA-1 prohibited for new implementations.
+- Key derivation: PBKDF2, scrypt, or Argon2id for password-based derivation.
+
+E.2 Key Management
+- Master keys in HSM or cloud KMS with dual control for manual rotation.
+- Data encryption keys rotated annually or on custodian personnel change (Section 4.1).
+- Key access logged to RC-004; quarterly review of KMS policy bindings.
+
+E.3 Prohibited Practices
+- Hard-coded secrets in application repositories (Section 4.3).
+- Shared symmetric keys across production and non-production environments.
+- Email transmission of unencrypted RESTRICTED attachments.
+
+END OF DOCUMENT
