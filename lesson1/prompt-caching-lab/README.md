@@ -5,7 +5,7 @@ longest-prefix matching, TTL expiry, LRU eviction, and cost accounting — until
 it reproduces the create / read / fresh numbers from the lecture demo.
 
 The live Anthropic A/B experiment lives in
-[`../../lecture/prompt-caching-demo/`](../../lecture/prompt-caching-demo/).
+[`../lecture/prompt-caching-demo/`](../lecture/prompt-caching-demo/).
 Work through that first if you have not seen the 8-turn compliance-review
 conversation against the real API. **This lab needs no API key or network.**
 
@@ -23,7 +23,7 @@ tokens:  [ system + tools + document ][ turn 1 ][ turn 2 ] ...
 ```
 
 - A cache **read** costs ~0.1× the base input price.
-- A cache **write** costs ~1.25× (so turn 1 is slightly *more* expensive).
+- A cache **write** costs ~1.25× (so turn 1 is slightly _more_ expensive).
 - Savings appear from turn 2 onward and compound as the conversation grows.
 
 ## Setup
